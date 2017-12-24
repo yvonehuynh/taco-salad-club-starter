@@ -36,7 +36,7 @@ class App extends React.Component {
 			const itemsArray =[];
 			const itemsData = firebaseData.val();
 			for(let itemKey in itemsData){
-				itemsData[itemsKey].key = itemKey;
+				itemsData[itemKey].key = itemKey;
 				itemsArray.push(itemsData[itemKey])
 			}
 			this.setState({
@@ -64,6 +64,8 @@ class App extends React.Component {
 		dbRef.push(usersItem);
 	}
 	removeItem(itemToRemove){
+		const dbRef = firebase.database().ref(itemToRemove);
+		dbRef.remove();
 
 	}
 	render() {
@@ -80,7 +82,7 @@ class App extends React.Component {
 						<button>Add Item</button>
 					</form>
 					<ul className="items">
-						{this.state.items.map((item,i) => {
+						{this.state.items.map((item) => {
 							return <ClubItem data={item} key={item.key} remove={this.removeItem}/>
 						})}
 					</ul>
