@@ -4,6 +4,17 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ClubItem from './components/ClubItem';
 
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCRb7pafnMnJL7XZcWTLPVe6xY5YEJbL0s",
+    authDomain: "my-project-1503010099071.firebaseapp.com",
+    databaseURL: "https://my-project-1503010099071.firebaseio.com",
+    projectId: "my-project-1503010099071",
+    storageBucket: "my-project-1503010099071.appspot.com",
+    messagingSenderId: "524797115092"
+  };
+  firebase.initializeApp(config);
+
 class App extends React.Component {
 	constructor() {
 		super();
@@ -26,6 +37,18 @@ class App extends React.Component {
 		});
 	}
 	addItem(e) {
+		e.preventDefault();
+		const usersItem ={
+			item: this.state.item,
+			name: this.state.name
+		}
+		this.setState({
+			item: "",
+			nae: ""
+		})
+
+		const dbRef = firebase.database().ref();
+		dbRef.push(usersItem);
 	}
 	render() {
 		

@@ -29,9 +29,12 @@ gulp.task('bs', () => {
 	browserSync.init({
 		server: {
 			baseDir: './'
-		}
+		},
+		browser: ["chrome.exe"]
 	});
 });
+
+
 
 gulp.task('default', ['js','bs'], () => {
 	gulp.watch('src/**/*.js',['js']);
