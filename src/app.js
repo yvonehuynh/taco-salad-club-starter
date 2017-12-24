@@ -30,6 +30,18 @@ class App extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 	}
 	componentDidMount() {
+		const dbRef = firebase.database().ref();
+
+		dbRef.on("value", (firebaseData)=>{
+			const itemsArray =[];
+			const itemsData = firebaseData.val();
+			for(let itemKey in itemsData){
+				itemsArray.push(itemsData[itemKey])
+			}
+			this.setState({
+				items: itemsArray
+			})
+		})
 	}
 	handleChange(e) {
 		this.setState({
@@ -44,7 +56,7 @@ class App extends React.Component {
 		}
 		this.setState({
 			item: "",
-			nae: ""
+			name: ""
 		})
 
 		const dbRef = firebase.database().ref();
@@ -58,9 +70,9 @@ class App extends React.Component {
 				<section>
 					<form onSubmit={this.addItem} className="addForm">
 						<label htmlFor="item">Item: </label>
-						<input type="text" name="item" onChange={this.handleChange}/>
+						<input type="text" name="item" onChange={this.handleChange} value={this.state.item}/>
 						<label htmlFor="name">Name: </label>
-						<input type="text" name="name" onChange={this.handleChange}/>
+						<input type="text" name="name" onChange={this.handleChange} value={this.state.name}/>
 						<button>Add Item</button>
 					</form>
 					<ul className="items">
