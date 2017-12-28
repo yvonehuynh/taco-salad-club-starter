@@ -1,85 +1,96 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import List from "./list";
+import Header from './components/Header';
+import Footer from './components/Footer';
+import ClubItem from './components/ClubItem';
 
-// Initialize Firebase
-var config = {
-  apiKey: "AIzaSyCRb7pafnMnJL7XZcWTLPVe6xY5YEJbL0s",
-  authDomain: "my-project-1503010099071.firebaseapp.com",
-  databaseURL: "https://my-project-1503010099071.firebaseio.com",
-  projectId: "my-project-1503010099071",
-  storageBucket: "my-project-1503010099071.appspot.com",
-  messagingSenderId: "524797115092"
-};
-firebase.initializeApp(config);
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCRb7pafnMnJL7XZcWTLPVe6xY5YEJbL0s",
+    authDomain: "my-project-1503010099071.firebaseapp.com",
+    databaseURL: "https://my-project-1503010099071.firebaseio.com",
+    projectId: "my-project-1503010099071",
+    storageBucket: "my-project-1503010099071.appspot.com",
+    messagingSenderId: "524797115092"
+  };
+  firebase.initializeApp(config);
 
 class App extends React.Component {
-  constructor(){
-    super();
-    this.state={
-      contacts: [{
-        name: "Yvone Huynh",
-        address: "1 maple ave."
-      }],
-      name: "",
-      address: ""
-    };
-    this.onChange = this.onChange.bind(this)
-    this.addItem = this.addItem.bind(this)
-  };
-  componentDidMount() {
-    const dbRef = firebase.database().ref();
+	constructor() {
+		super();
+		this.state = {
+			items: [{
+				name:"Ryan Christiani",
+				item:"Sour Cream"
+			}],
+			name: "",
+			item: ""
+		}
+		this.addItem = this.addItem.bind(this);
+		this.handleChange = this.handleChange.bind(this);
+	}
+	componentDidMount() {
+		const dbRef = firebase.database().ref();
 
-    dbRef.on("value", (firebaseData) => {
-      const itemsArray = [];
-      const itemsData = firebaseData.val();
-      for (let itemKey in itemsData) {
-        itemsData[itemKey].key = itemKey;
-        itemsArray.push(itemsData[itemKey])
-      }
-      this.setState({
-        contacts: itemsArray
-      })
-    })
-  }
-  onChange(e){
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
-  addItem(e){
-    e.preventDefault();
-    const contactListing = {
-      name: this.state.name,
-      address: this.state.address
-    };
-    this.setState({
-      name: "",
-      address: ""
-    });
+		dbRef.on("value", (firebaseData)=>{
+			const itemsArray =[];
+			const itemsData = firebaseData.val();
+			for(let itemKey in itemsData){
+				itemsData[itemKey].key = itemKey;
+				itemsArray.push(itemsData[itemKey])
+			}
+			this.setState({
+				items: itemsArray
+			})
+		})
+	}
+	handleChange(e) {
+		this.setState({
+			[e.target.name]: e.target.value
+		});
+	}
+	addItem(e) {
+		e.preventDefault();
+		const usersItem ={
+			item: this.state.item,
+			name: this.state.name
+		}
+		this.setState({
+			item: "",
+			name: ""
+		})
 
-    const dbRef = firebase.database().ref();
-    dbRef.push(contactListing);
-  }
-    render() {
-      const myData = this.state.contacts
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((item) => <List data={item} />);
-      return (
-        <div>
-          <form onSubmit={this.addItem}>
-            <label htmlFor="name">Name</label>
-            <input type="text" name="name" value={this.state.name} onChange={this.onChange}/>
-            <label htmlFor="address">Address</label>
-            <input type="text" name="address" value={this.state.address} onChange={this.onChange}/>
-            <input type="submit"/>
-          </form>
-          <ul>
-        {myData}
-         </ul>
-        </div>
-      )
-    }
+		const dbRef = firebase.database().ref();
+		dbRef.push(usersItem);
+	}
+	removeItem(itemToRemove){
+		const dbRef = firebase.database().ref(itemToRemove);
+		dbRef.remove();
+
+	}
+	render() {
+		
+		return (
+			<div>
+				<Header />
+				<section>
+					<form onSubmit={this.addItem} className="addForm">
+						<label htmlFor="item">Item: </label>
+						<input type="text" name="item" onChange={this.handleChange} value={this.state.item}/>
+						<label htmlFor="name">Name: </label>
+						<input type="text" name="name" onChange={this.handleChange} value={this.state.name}/>
+						<button>Add Item</button>
+					</form>
+					<ul className="items">
+						{this.state.items.map((item) => {
+							return <ClubItem data={item} key={item.key} remove={this.removeItem}/>
+						})}
+					</ul>
+				</section>
+				<Footer />
+			</div>
+		)
+	}
 }
 
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(<App/>,document.getElementById('app'));
